@@ -34,6 +34,7 @@ def encode_to_image(filename):
         col +=1
     pixelarray.append(rowarray)
     png.from_array(pixelarray,'RGB').save(filename[:-4]+".png")
+    f.close()
         
 def decode_from_image(image,filename):
     f = open(filename,"wb")
@@ -45,6 +46,7 @@ def decode_from_image(image,filename):
         for i in range(image_info[0]):                        
             byte = (row[i*3] << 6) + (row[i*3 + 1] << 3) +row[i*3 + 2]                                  
             f.write(chr(byte))            
+    f.close()
 
 def upload_to_imgur(image):
     import pycurl
@@ -65,7 +67,6 @@ def upload_to_imgur(image):
 def download_from_imgur(url):
     fname = "./downloaded_image.png"
     urllib.urlretrieve( url, fname )
-
 
 def main(argv):
     filename = argv[1]
