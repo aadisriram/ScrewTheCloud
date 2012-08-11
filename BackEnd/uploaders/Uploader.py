@@ -20,12 +20,18 @@ class Uploader:
     def retrieve_data(self,identifier):
         return None
 
+    def upId(self):
+        return None
+
 class ImageUploader(Uploader):
+    def upId(self):
+        return "im"
+
     def upload_data(self,data):                
         width = math.sqrt(len(data))
         pixelarray = []
         rowarray = []
-        row,col = 0,0
+        row,col = 0,0               
         for byte in data:
             byte = byte = int(binascii.hexlify(byte), 16)            
             # convert each byte to pixels, using 3 bits for B and G, and 2 bits for R
@@ -75,8 +81,12 @@ class ImageUploader(Uploader):
                 byte_array.append(byte)
         f.close()
         return byte_array
+        
 
 class PastebinUploader(Uploader):
+    def upId(self):
+        return "pb"
+
     def upload_data(self,data):
         string = ""
         for byte in data:
