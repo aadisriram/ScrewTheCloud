@@ -49,7 +49,7 @@ class ImageUploader(Uploader):
         pixelarray.append(rowarray)
         png.from_array(pixelarray,'RGB').save("tmp.png")        
         identifier = self.upload_to_imgur("tmp.png")        
-        return identifier
+        return identifier+':'+str(len(data))
 
     def upload_to_imgur(self,image_file):
         import pycurl
@@ -69,7 +69,9 @@ class ImageUploader(Uploader):
 
     def retrieve_data(self,identifier):
         filename = "./tmp2.png"
-        url = "http://i.imgur.com/"+identifier+".png"
+        img_id = identifier[:identifier.find(':')]        
+        filesize = int(identifier[identifier.find(':')+1:])        
+        url = "http://i.imgur.com/"+img_id+".png"
         urllib.urlretrieve(url, filename)
         f = open("./tmp2.png","rb")         
         image_info =  png.Reader(filename).asRGB()
@@ -79,6 +81,8 @@ class ImageUploader(Uploader):
             for i in range(image_info[0]):                        
                 byte = (row[i*3] << 6) + (row[i*3 + 1] << 3) +row[i*3 + 2]                            
                 byte_array.append(byte)
+            if len(byte_array) == filesize:
+                break
         f.close()
         return byte_array
         
@@ -120,6 +124,7 @@ def test_image_upload(filename):
         byte_array.append(byte)
         byte = f.read(1)
     identifier = myImageUploader.upload_data(byte_array)    
+    print "identifier",identifier
     byte_array = myImageUploader.retrieve_data(identifier)
     f = open("./decoded.txt","wb")    
     for byte in byte_array:
@@ -139,7 +144,7 @@ def test_pastebin_upload(filename):
     print myPastebinUploader.retrieve_data(identifier)
 
 if __name__=="__main__":
-    test_pastebin_upload(sys.argv[1])
+    test_image_upload(sys.argv[1])
     
     
     
