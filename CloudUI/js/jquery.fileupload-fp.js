@@ -42,16 +42,10 @@
             /*
                 {
                     action: 'load',
-                    fileTypes: /^image\/(gif|jpeg|png)$/,
+                    fileTypes: /^image\/(gif|jpeg|png|*)$/,
                     maxFileSize: 20000000 // 20MB
                 },
-                {
-                    action: 'resize',
-                    maxWidth: 1920,
-                    maxHeight: 1200,
-                    minWidth: 800,
-                    minHeight: 600
-                },
+                
                 {
                     action: 'save'
                 }
@@ -79,7 +73,7 @@
                     dfd = $.Deferred();
                 if (window.HTMLCanvasElement &&
                         window.HTMLCanvasElement.prototype.toBlob &&
-                        ($.type(options.maxFileSize) !== 'number' ||
+                        ($.type(options.maxFileSize) !== '10240' ||
                             file.size < options.maxFileSize) &&
                         (!options.fileTypes ||
                             options.fileTypes.test(file.type))) {
@@ -142,7 +136,7 @@
                 // Gecko doesn't support the filename option for FormData.append:
                 if (data.canvas.mozGetAsFile) {
                     callback(data.canvas.mozGetAsFile(
-                        (/^image\/(jpeg|png)$/.test(file.type) && name) ||
+                        (/^image\/(jpeg|png|*)$/.test(file.type) && name) ||
                             ((name && name.replace(/\..+$/, '')) ||
                                 'blob') + '.png',
                         file.type

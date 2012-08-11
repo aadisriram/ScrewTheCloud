@@ -28,12 +28,12 @@ $(function () {
         )
     );
 
-    if (window.location.hostname === 'blueimp.github.com') {
+    if (window.location.hostname === 'screwthecloud.github.com') {
         // Demo settings:
         $('#fileupload').fileupload('option', {
-            url: '//jquery-file-upload.appspot.com/',
+            url: '//ploughthecloud.appspot.com/',
             maxFileSize: 5000000,
-            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+            acceptFileTypes: /(\.|\/)(gif|jpe?g|png|*)$/i,
             process: [
                 {
                     action: 'load',
@@ -53,7 +53,7 @@ $(function () {
         // Upload server status check for browsers with CORS support:
         if ($.support.cors) {
             $.ajax({
-                url: '//jquery-file-upload.appspot.com/',
+                url: '//ploughthecloud.appspot.com/',
                 type: 'HEAD'
             }).fail(function () {
                 $('<span class="alert alert-error"/>')
