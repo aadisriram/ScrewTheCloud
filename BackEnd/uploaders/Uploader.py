@@ -7,6 +7,8 @@ import binascii
 import cStringIO
 import pycurl
 import urllib
+import base64
+from pastebin import PastebinAPI
 
 class Uploader:        
     def upload_data(self,data):
@@ -74,16 +76,33 @@ class ImageUploader(Uploader):
         f.close()
         return byte_array
 
-class PasteBinUploader(Uploader):
+class PastebinUploader(Uploader):
     def upload_data(self,data):
-        print "hi"
+        string = ""
+        for byte in data:
+            string = string + str(byte)
+        encoded = base64.b64encode(string)    
+        return self.upload_to_pastebin(encoded)
 
-    def retrieve_data(self,data):
-        print "hi"
+    def upload_to_pastebin(self,text):
+        api_dev_key = '2a3df06fe524ed88d15b660ccdca21dc'
+        api_paste_code = text
+        paste_name = 'OpenHack2012'        
+        pastebinObj = PastebinAPI()
+        ret = pastebinObj.paste(api_dev_key, api_paste_code, api_user_key = None, paste_name = paste_name,
+                                paste_format = None, paste_private = None,
+                                paste_expire_date = None)        
+        print ret,ret[20:]        
+        return ret[20:]
+
+    def retrieve_data(self,identifier):
+        url = "http://pastebin.com/raw.php?i="+identifier        
+        encoded_data= urllib.urlopen(url).read()
+        return base64.b64decode(encoded_data)
 
         
-def test_upload(filename):
-    myImageUploader = ImageUploader();
+def test_image_upload(filename):
+    myImageUploader = ImageUploader()
     f = open(filename,"rb")    
     byte = f.read(1)
     byte_array = []
@@ -94,15 +113,23 @@ def test_upload(filename):
     byte_array = myImageUploader.retrieve_data(identifier)
     f = open("./decoded.txt","wb")    
     for byte in byte_array:
-        #print chr(byte)
         f.write(chr(byte))
     f.close()
     
-
-
+def test_pastebin_upload(filename):
+    myPastebinUploader = PastebinUploader()
+    f = open(filename,"rb")
+    byte = f.read(1)
+    byte_array = []
+    while byte!="":
+        byte_array.append(byte)
+        byte = f.read(1)
+    identifier = myPastebinUploader.upload_data(byte_array)
+    print "identifier",identifier
+    print myPastebinUploader.retrieve_data(identifier)
 
 if __name__=="__main__":
-    test_upload(sys.argv[1])
+    test_pastebin_upload(sys.argv[1])
     
     
     
