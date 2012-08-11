@@ -40,8 +40,8 @@ class ImageUploader(Uploader):
             col +=1
         pixelarray.append(rowarray)
         png.from_array(pixelarray,'RGB').save("tmp.png")        
-        link = self.upload_to_imgur("tmp.png")
-        return link
+        identifier = self.upload_to_imgur("tmp.png")        
+        return identifier
 
     def upload_to_imgur(self,image_file):
         import pycurl
@@ -56,23 +56,31 @@ class ImageUploader(Uploader):
         c.perform()
         c.close()
         xml_str = response.getvalue()    
-        link = xml_str[xml_str.find("<original>")+10:xml_str.find("</original>")]
-        return link
+        link = xml_str[xml_str.find("<original>")+10:xml_str.find("</original>")]        
+        return link[19:-4]
 
     def retrieve_data(self,identifier):
         filename = "./tmp2.png"
-        urllib.urlretrieve(identifier, filename)
+        url = "http://i.imgur.com/"+identifier+".png"
+        urllib.urlretrieve(url, filename)
         f = open("./tmp2.png","rb")         
         image_info =  png.Reader(filename).asRGB()
         byte_array = []
         pixeldata = png.Reader(filename).asRGB()[2]
         for row in pixeldata:        
             for i in range(image_info[0]):                        
-                byte = (row[i*3] << 6) + (row[i*3 + 1] << 3) +row[i*3 + 2]                             
-                #f.write(chr(byte))            
+                byte = (row[i*3] << 6) + (row[i*3 + 1] << 3) +row[i*3 + 2]                            
                 byte_array.append(byte)
         f.close()
         return byte_array
+
+class PasteBinUploader(Uploader):
+    def upload_data(self,data):
+        print "hi"
+
+    def retrieve_data(self,data):
+        print "hi"
+
         
 def test_upload(filename):
     myImageUploader = ImageUploader();
@@ -82,14 +90,15 @@ def test_upload(filename):
     while byte!="":
         byte_array.append(byte)
         byte = f.read(1)
-    identifier = myImageUploader.upload_data(byte_array)
-    
+    identifier = myImageUploader.upload_data(byte_array)    
     byte_array = myImageUploader.retrieve_data(identifier)
     f = open("./decoded.txt","wb")    
     for byte in byte_array:
-        print chr(byte)
+        #print chr(byte)
         f.write(chr(byte))
     f.close()
+    
+
 
 
 if __name__=="__main__":
