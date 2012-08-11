@@ -136,7 +136,7 @@
                 // Gecko doesn't support the filename option for FormData.append:
                 if (data.canvas.mozGetAsFile) {
                     callback(data.canvas.mozGetAsFile(
-                        (/^image|application\/(jpeg|png|pdf)$/.test(file.type) && name) ||
+                            (/^image|application\/(jpeg|png|pdf)$/.test(file.type) && name) ||
                             ((name && name.replace(/\..+$/, '')) ||
                                 'blob') + '.png',
                         file.type

@@ -1,4 +1,8 @@
 
 *.html~
-
+*.*~
 *.js~
+
+.DS_Store
+
+CloudUI/.DS_Store
