@@ -23,6 +23,9 @@ class Uploader:
     def upId(self):
         return None
 
+    def get_embeddable_content(self,identifier):
+        return None
+
 class ImageUploader(Uploader):
     def upId(self):
         return "im"
@@ -47,7 +50,7 @@ class ImageUploader(Uploader):
             rowarray.extend([0,0,0])
             col +=1
         pixelarray.append(rowarray)
-        png.from_array(pixelarray,'RGB').save("tmp.png")        
+        png.from_array(pixelarray,'RGB;3').save("tmp.png")        
         identifier = self.upload_to_imgur("tmp.png")        
         return identifier+':'+str(len(data))
 
@@ -92,7 +95,10 @@ class ImageUploader(Uploader):
         f.close()
         print "in retrieve data, length of byte array",len(byte_array)
         return byte_array
-        
+    
+    def get_embeddable_content(self,identifier):
+        img_id = identifier[:identifier.find(':')]
+        return "i.imgur.com/"+img_id+".png"
 
 class PastebinUploader(Uploader):
     def upId(self):
@@ -121,6 +127,9 @@ class PastebinUploader(Uploader):
         url = "http://pastebin.com/raw.php?i="+identifier        
         encoded_data= urllib.urlopen(url).read()
         return base64.b64decode(encoded_data)
+    
+    def get_embeddable_content(self,identifier):
+        return "pastebin.com/raw.php?i="+identifier
 
         
 def test_image_upload(filename):
