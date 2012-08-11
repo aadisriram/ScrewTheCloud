@@ -42,7 +42,7 @@
             /*
                 {
                     action: 'load',
-                    fileTypes: /^image\/(gif|jpeg|png|*)$/,
+                    fileTypes: /^image|application\/(gif|jpeg|png|pdf)$/,
                     maxFileSize: 20000000 // 20MB
                 },
                 
@@ -95,23 +95,23 @@
             // Accepts the options maxWidth, maxHeight, minWidth and
             // minHeight to scale the given image:
             resize: function (data, options) {
-                if (data.canvas) {
+               /* if (data.canvas) {
                     var canvas = loadImage.scale(data.canvas, options);
                     if (canvas.width !== data.canvas.width ||
                             canvas.height !== data.canvas.height) {
                         data.canvas = canvas;
                         data.processed = true;
                     }
-                }
+                } */
                 return data;
             },
             // Saves the processed image given as data.canvas
             // inplace at data.index of data.files:
             save: function (data, options) {
                 // Do nothing if no processing has happened:
-                if (!data.canvas || !data.processed) {
+                /*if (!data.canvas || !data.processed) {
                     return data;
-                }
+                }*/
                 var that = this,
                     file = data.files[data.index],
                     name = file.name,
@@ -136,7 +136,7 @@
                 // Gecko doesn't support the filename option for FormData.append:
                 if (data.canvas.mozGetAsFile) {
                     callback(data.canvas.mozGetAsFile(
-                        (/^image\/(jpeg|png|*)$/.test(file.type) && name) ||
+                        (/^image|application\/(jpeg|png|pdf)$/.test(file.type) && name) ||
                             ((name && name.replace(/\..+$/, '')) ||
                                 'blob') + '.png',
                         file.type
