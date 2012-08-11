@@ -17,6 +17,66 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
 <meta charset="utf-8">
 <title>Plough The Cloud</title>
+<script type="text/javascript">
+ 
+   function addDiv(id,color,width){
+     var divs = document.getElementById('splitBar');
+     divs.innerHTML+='<div align="center" id="'+id+'" style="float:left; background-color:'+color+';width:0;"><p style="font-family:arial;color:white;font-size:15px;">'+width+"%"+'</p></div>';
+     setDivWidth(id,width);
+   }
+   
+   function addLastDiv(){
+     var divs = document.getElementById('splitBar');
+     divs.innerHTML+='<div style="clear:both;"></div>';
+   }
+   
+   function setDivWidth(id,width){
+     var canvas = document.getElementById(id);
+     //canvas.style.width=width + 'px' ;
+     canvas.style.height='50px' ;
+   }
+   
+   function DrawSplitBar(){
+        var percent= new Array();
+        percent[0]=25;
+        percent[1]=50;
+        percent[2]=15;
+        percent[3]=10;
+
+        var color= new Array();
+        color[0]= "#9950ba"; 
+        color[1]= "#81a6eb";
+        color[2]= "#32ab42";
+        color[3]= "#e0e03f";
+        color[4]= "#a8a82a";
+        
+        var widther = new Array();
+
+        var screenWidth= screen.width*.91;
+
+        for(k in percent)
+        {
+           addDiv(k, color[k], percent[k]);
+        }
+        
+        var time = 1000;
+        addLastDiv();
+        $("#0").animate({
+        width:percent[0]*screenWidth/100,
+        }, time);
+        $("#1").animate({
+        width:percent[1]*screenWidth/100,
+        }, time);
+        $("#2").animate({
+        width:percent[2]*screenWidth/100,
+        }, time);
+        $("#3").animate({
+        width:percent[3]*screenWidth/100,
+        }, time);
+   }
+   
+</script>
+
 <meta name="description" content="File Upload widget with multiple file selection, drag&amp;drop support, progress bar and preview images for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads.">
 <meta name="viewport" content="width=device-width">
 <!-- Bootstrap CSS Toolkit styles -->
@@ -34,7 +94,8 @@
 <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
 <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 </head>
-<body>
+<body onLoad='DrawSplitBar();'>
+
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
@@ -73,7 +134,7 @@
         <div class="row fileupload-buttonbar">
              <div class="span7">
                 <!-- The fileinput-button span is used to style the file input field as button -->
-                <<span class="btn btn-success fileinput-button">
+                <span class="btn btn-success fileinput-button">
                     <i class="icon-plus icon-white"></i>
                     <span>Add files...</span>
                     <input type="file" name="files[]" multiple>
@@ -109,6 +170,10 @@
         <table role="presentation" class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
     </form>
     <br>
+    
+    <div id='splitBar' style="horizontal-align:center;padding-bottom:1cm;">
+    </div>
+    
     <div class="well">
         <h3>Demo Notes</h3>
         <ul>
