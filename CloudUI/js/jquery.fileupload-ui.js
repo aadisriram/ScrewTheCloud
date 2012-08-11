@@ -186,6 +186,16 @@
                     );
                 }
             },
+	     
+	     $('#myForm').ajaxForm({
+		  url : 'http://localhost:8080', // or whatever
+		  dataType : 'json',
+		  success : function (response) {
+		  alert("The server says: " + response);
+		}
+	     })
+;
+
             // Callback for failed (abort or error) uploads:
             fail: function (e, data) {
                 var that = $(this).data('fileupload'),
