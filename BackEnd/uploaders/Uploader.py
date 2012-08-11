@@ -80,7 +80,7 @@ class ImageUploader(Uploader):
         for row in pixeldata:        
             for i in range(image_info[0]):                        
                 byte = (row[i*3] << 6) + (row[i*3 + 1] << 3) +row[i*3 + 2]                            
-                byte_array.append(byte)
+                byte_array.append(chr(byte))
             if len(byte_array) == filesize:
                 break
         f.close()
@@ -129,7 +129,7 @@ def test_image_upload(filename):
     byte_array = myImageUploader.retrieve_data(identifier)
     f = open("./decoded.txt","wb")    
     for byte in byte_array:
-        f.write(chr(byte))
+        f.write(byte)
     f.close()
     
 def test_pastebin_upload(filename):
