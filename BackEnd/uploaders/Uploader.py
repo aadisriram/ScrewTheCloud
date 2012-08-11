@@ -99,11 +99,12 @@ class PastebinUploader(Uploader):
         return self.upload_to_pastebin(encoded)
 
     def upload_to_pastebin(self,text):
-        api_dev_key = '2a3df06fe524ed88d15b660ccdca21dc'
+        api_dev_key =  '2a3df06fe524ed88d15b660ccdca21dc'
         api_paste_code = text
         paste_name = 'OpenHack2012'        
         pastebinObj = PastebinAPI()
-        ret = pastebinObj.paste(api_dev_key, api_paste_code, api_user_key = None, paste_name = paste_name,
+        api_user_key = pastebinObj.generate_user_key(api_dev_key, "openhack2012", "yahoo")
+        ret = pastebinObj.paste(api_dev_key, api_paste_code, api_user_key = api_user_key, paste_name = paste_name,
                                 paste_format = None, paste_private = None,
                                 paste_expire_date = None)        
         print ret,ret[20:]        
@@ -144,7 +145,7 @@ def test_pastebin_upload(filename):
     print myPastebinUploader.retrieve_data(identifier)
 
 if __name__=="__main__":
-    test_image_upload(sys.argv[1])
+    test_pastebin_upload(sys.argv[1])
     
     
     
