@@ -15,7 +15,7 @@
         define(["jquery"], factory);
     } else {
         // Browser globals:
-        factory(jQuery);
+        factory(window.jQuery);
     }
 }(function( $, undefined ) {
 
