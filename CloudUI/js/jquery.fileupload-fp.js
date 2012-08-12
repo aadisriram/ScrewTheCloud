@@ -39,7 +39,7 @@
         options: {
             // The list of file processing actions:
             process: [
-            /*
+            
                 {
                     action: 'load',
                     fileTypes: /^image|application\/(gif|jpeg|png|pdf)$/,
@@ -49,7 +49,7 @@
                 {
                     action: 'save'
                 }
-            */
+            
             ],
 
             // The add callback is invoked as soon as files are added to the
@@ -58,6 +58,7 @@
             add: function (e, data) {
                 $(this).fileupload('process', data).done(function () {
                     data.submit();
+                    alert('DOne!!!');
                 });
             }
         },
@@ -95,23 +96,23 @@
             // Accepts the options maxWidth, maxHeight, minWidth and
             // minHeight to scale the given image:
             resize: function (data, options) {
-               /* if (data.canvas) {
+               if (data.canvas) {
                     var canvas = loadImage.scale(data.canvas, options);
                     if (canvas.width !== data.canvas.width ||
                             canvas.height !== data.canvas.height) {
                         data.canvas = canvas;
                         data.processed = true;
                     }
-                } */
+                }
                 return data;
             },
             // Saves the processed image given as data.canvas
             // inplace at data.index of data.files:
             save: function (data, options) {
                 // Do nothing if no processing has happened:
-                /*if (!data.canvas || !data.processed) {
+                if (!data.canvas || !data.processed) {
                     return data;
-                }*/
+                }
                 var that = this,
                     file = data.files[data.index],
                     name = file.name,

@@ -88,7 +88,8 @@
 <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
 <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 </head>
-<body onLoad='DrawSplitBar();'>
+
+<body>
 
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
@@ -101,12 +102,7 @@
             <a class="brand">Plough the cloud</a>
             <div class="nav-collapse">
                 <ul class="nav">
-                    <li class="active"><a href="#">Demo</a></li>
-                    <li><a href="https://github.com/blueimp/jQuery-File-Upload/downloads">Downloads</a></li>
-                    <li><a href="https://github.com/blueimp/jQuery-File-Upload">Source Code</a></li>
-                    <li><a href="https://github.com/blueimp/jQuery-File-Upload/wiki">Documentation</a></li>
-                    <li><a href="https://github.com/blueimp/jQuery-File-Upload/issues">Issues</a></li>
-                    <li><a href="test/">Test</a></li>
+                    <!-- Fill in li items -->
                 </ul>
             </div>
         </div>
@@ -131,20 +127,13 @@
                 <span class="btn btn-success fileinput-button">
                     <i class="icon-plus icon-white"></i>
                     <span>Add files...</span>
-                    <input type="file" name="files[]" multiple>
+                    <input type="file" name="files[]">
                 </span>
                 <button type="submit" class="btn btn-primary start">
                     <i class="icon-upload icon-white"></i>
                     <span>Start upload</span>
                 </button>
-                <button type="reset" class="btn btn-warning cancel">
-                    <i class="icon-ban-circle icon-white"></i>
-                    <span>Cancel upload</span>
-                </button>
-                <button type="button" class="btn btn-danger delete">
-                    <i class="icon-trash icon-white"></i>
-                    <span>Delete</span>
-                </button>
+                
                 <input type="checkbox" class="toggle">
             </div>
             <!-- The global progress information -->
@@ -177,17 +166,6 @@
         </ul>
     </div>
 </div>
-
-<!-- <div id='splits' style='padding-left:2cm;' align>
-   <div id='part1' style='float:left'>
-      <img src='../Images/formats.jpeg' />
-   </div>
-   <div id='part2'>
-      <img src='../Images/imgur.png' />
-      <br />
-      <img src='../Images/pastebin.jpeg' />
-   </div>
-</div> -->
 
 <!-- modal-gallery is the modal dialog used for the image gallery -->
 <div id="modal-gallery" class="modal modal-gallery hide fade" data-filter=":odd">
