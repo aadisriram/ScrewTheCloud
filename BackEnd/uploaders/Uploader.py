@@ -98,7 +98,7 @@ class ImageUploader(Uploader):
     
     def get_embeddable_content(self,identifier):
         img_id = identifier[:identifier.find(':')]
-        return "http://i.imgur.com/"+img_id+".png"
+        return "i.imgur.com/"+img_id+".png"
 
 class PastebinUploader(Uploader):
     def upId(self):
@@ -129,7 +129,7 @@ class PastebinUploader(Uploader):
         return base64.b64decode(encoded_data)
     
     def get_embeddable_content(self,identifier):
-        return "http://pastebin.com/raw.php?i="+identifier
+        return "pastebin.com/raw.php?i="+identifier
 
         
 def test_image_upload(filename):
