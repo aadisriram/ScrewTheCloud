@@ -1,6 +1,9 @@
 from flask import Flask, request, redirect, url_for, send_file
 from werkzeug import secure_filename
 
+from uploaders.Uploader import ImageUploader
+from uploaders.Uploader import PastebinUploader
+
 import os
 import math
 import random
@@ -43,9 +46,12 @@ class UploaderB():
     def retrieve_data(self, identifier):
         identifier = int(identifier)
         return self.dataStore[identifier]
+    
+img_uploader = ImageUploader()
+pb_uploader = PastebinUploader()
         
-uploaders['ua'] = Uploader()
-uploaders['ub'] = UploaderB()
+uploaders[img_uploader.upId()] = img_uploader
+uploaders[pb_uploader.upId()] = pb_uploader
 
 class DefaultSplitStrategy():
     _numSplits = 0

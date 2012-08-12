@@ -78,7 +78,7 @@ class ImageUploader(Uploader):
         for row in pixeldata:        
             for i in range(image_info[0]):                        
                 byte = (row[i*3] << 6) + (row[i*3 + 1] << 3) +row[i*3 + 2]                            
-                byte_array.append(byte)
+                byte_array.append(chr(byte))
         f.close()
         return byte_array
         
@@ -95,7 +95,7 @@ class PastebinUploader(Uploader):
         return self.upload_to_pastebin(encoded)
 
     def upload_to_pastebin(self,text):
-        api_dev_key = '2a3df06fe524ed88d15b660ccdca21dc'
+        api_dev_key = '82d49dab3c4ed3b3cf1a3c9ea9492721'
         api_paste_code = text
         paste_name = 'OpenHack2012'        
         pastebinObj = PastebinAPI()
