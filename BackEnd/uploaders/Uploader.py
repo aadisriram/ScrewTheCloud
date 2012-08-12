@@ -27,15 +27,15 @@ class ImageUploader(Uploader):
     def upId(self):
         return "im"
 
-    def upload_data(self,data):                
+    def upload_data(self,data):                        
         width = int(math.sqrt(len(data)))
         pixelarray = []
         rowarray = []
         row,col = 0,0               
         for byte in data:
             byte = int(binascii.hexlify(byte), 16)            
-            # convert each byte to pixels, using 3 bits for B and G, and 2 bits for R
-            pixel = [(byte & 0b11000000) >> 6,(byte & 0b00111000) >> 3,(byte & 0b00000111)]
+            # convert each byte to pixels
+            pixel = [(byte & 0b11000000) >> 6,(byte & 0b00111000) >> 3,(byte & 0b00000111)]        
             rowarray.extend(pixel)        
             col += 1
             if (col == width):
@@ -47,7 +47,7 @@ class ImageUploader(Uploader):
             rowarray.extend([0,0,0])
             col +=1
         pixelarray.append(rowarray)
-        png.from_array(pixelarray,'RGB;3').save("tmp.png")        
+        png.from_array(pixelarray,'RGB').save("tmp.png")        
         identifier = self.upload_to_imgur("tmp.png")        
         return identifier+':'+str(len(data))
 
@@ -70,7 +70,7 @@ class ImageUploader(Uploader):
     def retrieve_data(self,identifier):
         filename = "./tmp2.png"
         img_id = identifier[:identifier.find(':')]        
-        filesize = int(identifier[identifier.find(':')+1:])        
+        filesize = int(identifier[identifier.find(':')+1:])                        
         url = "http://i.imgur.com/"+img_id+".png"
         urllib.urlretrieve(url, filename)
         f = open("./tmp2.png","rb")         
@@ -78,13 +78,19 @@ class ImageUploader(Uploader):
         print image_info
         byte_array = []
         pixeldata = png.Reader(filename).asRGB()[2]
+        print " in retrieve, filesize is",filesize
+        exitflag = False
         for row in pixeldata:        
+            if exitflag:
+                break
             for i in range(image_info[0]):                        
                 byte = (row[i*3] << 6) + (row[i*3 + 1] << 3) +row[i*3 + 2]                            
-                byte_array.append(chr(byte))
-            if len(byte_array) == filesize:
-                break
+                byte_array.append(chr(byte))            
+                if len(byte_array) == filesize:                    
+                    exitflag = True
+                    break
         f.close()
+        print "in retrieve data, length of byte array",len(byte_array)
         return byte_array
         
 
@@ -120,14 +126,17 @@ class PastebinUploader(Uploader):
 def test_image_upload(filename):
     myImageUploader = ImageUploader()
     f = open(filename,"rb")    
+    print "filesize",os.path.getsize(filename)
     byte = f.read(1)
     byte_array = []
     while byte!="":
         byte_array.append(byte)
         byte = f.read(1)
+    print "length of byte array",len(byte_array)
     identifier = myImageUploader.upload_data(byte_array)    
     print "identifier",identifier
     byte_array = myImageUploader.retrieve_data(identifier)    
+    print "retrieved byte array length",len(byte_array)
     f = open("./decoded.txt","wb")    
     for byte in byte_array:
         f.write(byte)
