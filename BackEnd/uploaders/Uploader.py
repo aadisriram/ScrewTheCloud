@@ -28,12 +28,12 @@ class ImageUploader(Uploader):
         return "im"
 
     def upload_data(self,data):                
-        width = math.sqrt(len(data))
+        width = int(math.sqrt(len(data)))
         pixelarray = []
         rowarray = []
         row,col = 0,0               
         for byte in data:
-            byte = byte = int(binascii.hexlify(byte), 16)            
+            byte = int(binascii.hexlify(byte), 16)            
             # convert each byte to pixels, using 3 bits for B and G, and 2 bits for R
             pixel = [(byte & 0b11000000) >> 6,(byte & 0b00111000) >> 3,(byte & 0b00000111)]
             rowarray.extend(pixel)        
@@ -47,7 +47,7 @@ class ImageUploader(Uploader):
             rowarray.extend([0,0,0])
             col +=1
         pixelarray.append(rowarray)
-        png.from_array(pixelarray,'RGB').save("tmp.png")        
+        png.from_array(pixelarray,'RGB;3').save("tmp.png")        
         identifier = self.upload_to_imgur("tmp.png")        
         return identifier+':'+str(len(data))
 
@@ -74,7 +74,8 @@ class ImageUploader(Uploader):
         url = "http://i.imgur.com/"+img_id+".png"
         urllib.urlretrieve(url, filename)
         f = open("./tmp2.png","rb")         
-        image_info =  png.Reader(filename).asRGB()
+        image_info =  png.Reader(filename).asRGB()        
+        print image_info
         byte_array = []
         pixeldata = png.Reader(filename).asRGB()[2]
         for row in pixeldata:        
@@ -126,7 +127,7 @@ def test_image_upload(filename):
         byte = f.read(1)
     identifier = myImageUploader.upload_data(byte_array)    
     print "identifier",identifier
-    byte_array = myImageUploader.retrieve_data(identifier)
+    byte_array = myImageUploader.retrieve_data(identifier)    
     f = open("./decoded.txt","wb")    
     for byte in byte_array:
         f.write(byte)
@@ -145,7 +146,7 @@ def test_pastebin_upload(filename):
     print myPastebinUploader.retrieve_data(identifier)
 
 if __name__=="__main__":
-    test_pastebin_upload(sys.argv[1])
+    test_image_upload(sys.argv[1])
     
     
     
