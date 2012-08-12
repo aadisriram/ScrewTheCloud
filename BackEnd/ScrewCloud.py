@@ -25,7 +25,7 @@ class Uploader():
     dataStore = []
     
     def upId(self):
-        return 'ua'
+        return 'pb'
     
     def upload_data(self, data):
         self.dataStore.append(data)
@@ -35,14 +35,14 @@ class Uploader():
         identifier = int(identifier)
         return self.dataStore[identifier]
     
-    def getEmbeddableContent(self):
+    def get_embeddable_content(self, ident):
         return "google.com"
     
 class UploaderB():
     dataStore = []
     
     def upId(self):
-        return 'ub'
+        return 'im'
     
     def upload_data(self, data):
         self.dataStore.append(data)
@@ -52,17 +52,35 @@ class UploaderB():
         identifier = int(identifier)
         return self.dataStore[identifier]
     
-    def getEmbeddableContent(self):
+    def get_embeddable_content(self, ident):
         return "bing.com"
+    
+class UploaderB():
+    dataStore = []
+    
+    def upId(self):
+        return 'pc'
+    
+    def upload_data(self, data):
+        self.dataStore.append(data)
+        return (len(self.dataStore)-1)
+    
+    def retrieve_data(self, identifier):
+        identifier = int(identifier)
+        return self.dataStore[identifier]
+    
+    def get_embeddable_content(self, ident):
+        return "yahoo.com"
     
 img_uploader = ImageUploader()
 pb_uploader = PastebinUploader()
         
-uploaders[img_uploader.upId()] = img_uploader
-uploaders[pb_uploader.upId()] = pb_uploader
+#uploaders[img_uploader.upId()] = img_uploader
+#uploaders[pb_uploader.upId()] = pb_uploader
 
-#uploaders["ub"] = UploaderB()
-#uploaders["ua"] = Uploader()
+uploaders["pb"] = UploaderB()
+uploaders["im"] = Uploader()
+uploaders["pc"] = Uploader()
 
 class DefaultSplitStrategy():
     _numSplits = 0
@@ -134,6 +152,7 @@ class ScrewCloud():
     def upload(self, fileData, fileName, fileType):
         global uploaders
         splitSummary = []
+        chunkList = []
         
         identifier = ""
             
@@ -150,19 +169,84 @@ class ScrewCloud():
             #print prev_offset, prev_offset + next_split["size"]
             
             chunk = fileData[prev_offset:prev_offset + next_split["size"]]
+            chunkList.append((chunk, uploader.upId()))
+            
             upload_id = uploader.upload_data(chunk)
             
             identifier += uploader.upId() + str(upload_id) + ";"
             
             splitSummary.append({
-                "ratio": float(len(chunk))/float(len(fileData)),
-                "service": uploader.upId(),
-                "embeddable": uploader.getEmbeddableContent()
+                "r": "%.2f" % (float(len(chunk))/float(len(fileData))),
+                "s": uploader.upId(),
+                "e": uploader.get_embeddable_content(upload_id)
             })
             
             prev_offset += next_split["size"]
             next_split = dss.get_next()
+        
+        i = 0
+        chunkGroups = []
+        chunkUploaders = []
+        
+        while True:
+            if i >= len(chunkList):
+                break
+                
+            if i < len(chunkList) - 2 or i == len(chunkList) - 2:
+                # There is a group possible
+                chunkGroups.append((chunkList[i][0], chunkList[i+1][0], i, i+1))
+                chunkUploaders += [(chunkList[i][1], chunkList[i+1][1])]
+                i = i + 2
+            elif i == len(chunkList) - 1:
+                chunkGroups.append((chunkList[i][0], chunkList[0][0], i, 0))
+                chunkUploaders += [(chunkList[i][1], chunkList[0][1])]
+                i = i + 1
             
+        paritySet = []
+        identifier += "|"
+        
+        for chunkGroup in chunkGroups:
+            lower = 0
+            higher = 1
+            
+            paritySet.append({"sz": 0, "parity_data": []})
+            
+            if len(chunkGroup[0]) < len(chunkGroup[1]):
+                lower = 0
+                higher = 1
+            else:
+                lower = 1
+                higher = 0
+                
+            paritySet[-1]["size"] = len(chunkGroup[lower])
+            paritySet[-1]["parity_for"] = (chunkGroup[2], chunkGroup[3])
+                
+            for i in range(0, len(chunkGroup[higher][0]) - len(chunkGroup[lower][0])):
+                chunkGroup[lower][0] += [chr(0)]
+                
+            for i in range(0, len(chunkGroup[lower][0])):
+                paritySet[-1]["parity_data"].append(ord(chunkGroup[lower][0][i]) ^ ord(chunkGroup[higher][0][i]))
+                
+        i = 0
+        
+        for parityChunk in paritySet:
+            print '-->'
+            usedUploaders = chunkUploaders[i]
+            candidates = [upl for upl in uploaders if upl not in usedUploaders]
+            
+            if len(candidates) is not 0:
+                upldr = uploaders[candidates[random.randint(0, len(candidates)-1)]]
+                upload_id = uploader.upload_data(parityChunk["parity_data"])
+                
+                identifier += upldr.upId() + str(upload_id) + ";"
+                
+                splitSummary.append({
+                    "p": True,
+                    "sz": parityChunk["size"],
+                    "s": upldr.upId(),
+                    "e": uploader.get_embeddable_content(upload_id)
+                })
+        
         # Remove the trailing semi-colon
         
         stash_id = get_random_id()
@@ -176,6 +260,7 @@ class ScrewCloud():
         global uploaders
         
         print identifier
+        identifier = ''.join(identifier.split("|")[0][0:-1])
         parts = identifier.split(";")
         fileData = []
         
@@ -220,6 +305,8 @@ def upload():
         
         try:
             redir_request = request.args['redirect']
+        except:
+            print 'IGNORING'
         finally:
             print 'HERE'
         
@@ -244,7 +331,7 @@ def upload():
                 redir_request += "?payload=" + payload
                 return redirect(redir_request)
             
-            return json.dumps({"identifier": identData[0], "stashId": identData[1]})
+            return json.dumps({"identifier": identData[0], "stashId": identData[1], "splitSummary": identData[2]})
     
     return '''
     <!doctype html>
