@@ -1,9 +1,12 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, send_file
 from werkzeug import secure_filename
 
 import os
 import math
 import random
+import json
+import uuid
+import StringIO
 
 UPLOAD_FOLDER = '/home/thirtyseven/projects/ScrewTheCloud/BackEnd/store'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -111,7 +114,7 @@ class ScrewCloud():
     def encode(self, fileData):
         return fileData
     
-    def upload(self, fileData):
+    def upload(self, fileData, fileName, fileType):
         global uploaders
         
         identifier = ""
@@ -126,22 +129,23 @@ class ScrewCloud():
             
         while next_split is not None:
             uploader = next_split["service"]
+            print prev_offset, prev_offset + next_split["size"]
             chunk = fileData[prev_offset:prev_offset + next_split["size"]]
             upload_id = uploader.upload_data(chunk)
             
             identifier += uploader.upId() + str(upload_id) + ";"
             
-            prev_offset = next_split["size"]
+            prev_offset += next_split["size"]
             next_split = dss.get_next()
             
         # Remove the trailing semi-colon
         
         stash_id = get_random_id()
-        self.stash[stash_id] = identifier[0:-1]
+        self.stash[stash_id] = {"identifier": identifier[0:-1], "type": fileType, "name": fileName}
         return (identifier[0:-1], stash_id)
     
     def unstash(self, stash_id):
-        return stash[stash_id]
+        return self.stash[stash_id]
     
     def retrieve(self, identifier):
         global uploaders
@@ -177,9 +181,11 @@ def file_to_byte_array(fileName):
         
     return fileData
 
+'''
 fileData = file_to_byte_array("/home/thirtyseven/dump_file")
-ident = screwCloud.upload(fileData)
+ident = screwCloud.upload(fileData, "something", "app/binary")
 screwCloud.retrieve(ident)
+'''
 
 @app.route("/upload", methods=['GET', 'POST'])
 def upload():    
@@ -188,11 +194,19 @@ def upload():
         
         if file:
             filePath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            fileUpHeaders = file.headers._list
+            contentType = ''
+            
+            for fileUpHeader in fileUpHeaders:
+                if fileUpHeader[0] == 'Content-Type':
+                    contentType = fileUpHeader[1]
+                    
             file.save(filePath)
             
-            fileData = file_to_byte_array(filePath)                
-            identifier = screwCloud.upload(fileData)
+            fileData = file_to_byte_array(filePath)
+            identData = screwCloud.upload(fileData, file.filename, contentType)
             
+            return json.dumps({"identifier": identData[0], "stashId": identData[1]})
     
     return '''
     <!doctype html>
@@ -207,6 +221,43 @@ def upload():
     </form>
     '''
     
+@app.route("/retrieve", methods=['GET'])
+def retrieve():
+    stash_id = None
+    identifier = None
+    headers = {}
+    
+    fileType = ""
+    fileName = ""
+    
+    try:
+        stash_id = request.args['stash_id']
+    except:
+        None
+        
+    try:
+        identifier = request.args['identifier']
+    except:
+        None
+    
+    if stash_id is not None:
+        stashSet = screwCloud.unstash(str(stash_id))
+        identifier = stashSet["identifier"]
+        fileType = stashSet["type"]
+        fileName = stashSet["name"]
+        
+    fileData = screwCloud.retrieve(identifier)
+    fileResponse = StringIO.StringIO()
+    
+    byteCount = 0
+    
+    for fileDatum in fileData:
+        fileResponse.write(fileDatum)
+        
+    fileResponse.seek(0)
+    
+    return send_file(fileResponse, attachment_filename=fileName, as_attachment=True)
+    
 if __name__ == "__main__":
-    #app.run()
-    None
+    app.debug = True
+    app.run()
