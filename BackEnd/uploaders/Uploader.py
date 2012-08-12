@@ -131,7 +131,8 @@ class PastebinUploader(Uploader):
     def get_embeddable_content(self,identifier):
         return "pastebin.com/raw.php?i="+identifier
 
-        
+    
+#####################################################################################        
 def test_image_upload(filename):
     myImageUploader = ImageUploader()
     f = open(filename,"rb")    
