@@ -150,7 +150,7 @@
             // Callback for failed (abort or error) uploads:
             // fail: function (e, data) {}, // .bind('fileuploadfail', func);
             // Callback for completed (success, abort or error) requests:
-            // always: function (e, data) {}, // .bind('fileuploadalways', func);
+             function (e, alert('message')) {}, // .bind('fileuploadalways', func);
             // Callback for upload progress events:
             // progress: function (e, data) {}, // .bind('fileuploadprogress', func);
             // Callback for global upload progress events:
@@ -554,7 +554,7 @@
                                     loaded: o.chunkSize,
                                     total: o.chunkSize
                                 }), o);
-                            }
+                            } 
                             options.uploadedBytes = o.uploadedBytes +=
                                 o.chunkSize;
                         });

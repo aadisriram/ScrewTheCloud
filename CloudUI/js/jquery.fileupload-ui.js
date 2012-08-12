@@ -181,6 +181,7 @@
                     that._transition(template).done(
                         function () {
                             data.context = $(this);
+                            alert('Testing');
                             that._trigger('completed', e, data);
                         }
                     );
