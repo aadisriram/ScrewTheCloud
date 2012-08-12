@@ -181,11 +181,22 @@
                     that._transition(template).done(
                         function () {
                             data.context = $(this);
+                            alert('Testing');
                             that._trigger('completed', e, data);
                         }
                     );
                 }
             },
+	     
+	     $('#myForm').ajaxForm({
+		  url : 'http://localhost:8080', // or whatever
+		  dataType : 'json',
+		  success : function (response) {
+		  alert("The server says: " + response);
+		}
+	     })
+;
+
             // Callback for failed (abort or error) uploads:
             fail: function (e, data) {
                 var that = $(this).data('fileupload'),
