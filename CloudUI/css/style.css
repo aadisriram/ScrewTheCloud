@@ -22,7 +22,6 @@ body{
   background-color: #9950ba;
   float:left;
   height: 90px;
-  );
 }
 
 .imgur{
@@ -39,10 +38,14 @@ body{
 
 .undefined{
   width:0;
+  float:left;
   height: 90px;
-  );
+}
   
 .plough {
-   height: 90px;
+  background-color: #c87210; 
+  width:0;
+  float:left;
+  height: 90px;
 }
-}
+

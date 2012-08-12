@@ -43,12 +43,14 @@
  
   var percent = new Array();
   function addDiv(id,width,jObj){
+     jObj.r -= 0.0034;
      width=width*jObj.r*100;
      percent[id] = jObj.r;
+     var tmp = id;
      var divs = document.getElementById('splitBar');
      var lengthOfArr;
      id = "dive"+id;
-     divs.innerHTML += '<div class="' + serMap[jObj.s] + '" align="left" id="' + id + '" style="height:50px;"><img style="width: 86px; height: 86px;" src="img/' + serMap[jObj.s] + '.png"/></div>';
+     divs.innerHTML += '<div class="' + serMap[jObj.s] + '" align="left" id="' + id + '" style="height:50px;"><img style="width: 70px; height: 86px;" src="img/' + serMap[jObj.s] + '.png"/><p style="float:right;font:Segoe UI;font-size:40px;font-color:white;">'+percent[tmp]*100+'%</p></div>';
      emb_map[id] = "http://" + jObj.e;
      
      $("#" + id).live('click', function() {
@@ -79,11 +81,11 @@
     }
    
    function drawBar() {
-        var screenWidth= screen.width*.91;
+        var screenWidth= screen.width*.78;
         var respObject = jQuery.parseJSON(decodeURIComponent(getURLParameter("payload")));
         var obj = respObject["splitSummary"];
         
-        $("#link").html("Permalink for the upload <a href=\"retrieve?stash_id=" + respObject['stashId'] + "\">" + "at PloughTheCloud" + "</a>");
+        $("#link").html("Permalink for the upload <a href=\"http://0.0.0.0:5000/retrieve?stash_id=" + respObject['stashId'] + "\">" + "at PloughTheCloud" + "</a>");
         $("#identifier").html("FileChunk locator: <span style=\"font-family: monospace\">" + respObject['identifier'] + "</span>");
         
         this.lengthOfArr = obj.length;

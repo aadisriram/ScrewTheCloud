@@ -1,93 +1,73 @@
 <!DOCTYPE HTML>
+<!--
+/*
+ * jQuery File Upload Plugin Demo 6.9.1
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2010, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+-->
 <html lang="en">
+
 <head>
+
 <meta charset="utf-8">
-<link rel="stylesheet" href="css/style.css" type="text/css" />
+
 <title>Plough The Cloud</title>
-<script type="text/javascript">
- 
-   function addDiv(id,width){
-     var divs = document.getElementById('splitBar');
-     id = "dive"+id;
-     divs.innerHTML+='<div class="bar" align="center" id="'+id+'"><p style="font-family:fantasy;padding:15px;color:white;font-size:15px;">'+width+"%"+'</p></div>';
-     setDivWidth(id,width);
-   }
-   
-   function addLastDiv(){
-     var divs = document.getElementById('splitBar');
-     divs.innerHTML+='<div style="clear:both;"></div>';
-   }
-   
-   function setDivWidth(id,width){
-     var canvas = document.getElementById(id);
-     canvas.style.height='50px' ;
-   }
-   
-   function DrawSplitBar(){
-        var percent= new Array();
-        percent[0]=25;
-        percent[1]=50;
-        percent[2]=15;
-        percent[3]=10;
 
-        var widther = new Array();
-
-        var screenWidth= screen.width*.91;
-
-        for(k in percent)
-        {
-           addDiv(k, percent[k]);
-        }
-        
-        var time = 1000;
-        addLastDiv();
-        $("#dive0").animate({
-        width:percent[0]*screenWidth/100,
-        }, time);
-        $("#dive1").animate({
-        width:percent[1]*screenWidth/100,
-        }, time);
-        $("#dive2").animate({
-        width:percent[2]*screenWidth/100,
-        }, time);
-        $("#dive3").animate({
-        width:percent[3]*screenWidth/100,
-        }, time);
-   }
+<script>
+  function filename()
+  {
+      file=document.getElementById('file').value;
+      document.getElementById('disp').value=file;
+  }
+  
+  
 </script>
+<meta name="description" content="File Upload widget with multiple file selection, drag&amp;drop support, progress bar and preview images for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads.">
+<meta name="viewport" content="width=device-width">
 <!-- Bootstrap CSS Toolkit styles -->
 <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">
+<!-- Generic page styles -->
+<link rel="stylesheet" href="css/style.css">
+<!-- Bootstrap styles for responsive website layout, supporting different screen sizes -->
 <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css">
+<!-- Bootstrap CSS fixes for IE6 -->
+<!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
+<!-- Bootstrap Image Gallery styles -->
 <link rel="stylesheet" href="http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css">
+<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
 <link rel="stylesheet" href="css/jquery.fileupload-ui.css">
-<body>
+<!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
+<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<body onLoad="filename();">
 
-<div class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container">
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </a>
-            <a class="brand">Plough the cloud</a>
-            <div class="nav-collapse">
-                <ul class="nav">
-                    <!-- Fill in li items -->
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id='logo'>
+<div align="center">
    <img src='../Images/title.png' />
 </div>
 
-
-<form name="something" action="http://192.168.2.4:5000/upload?redirect=http%3A%2F%2Flocalhost%2FScrewTheCloud%2FCloudUI%2Findex2.html" method="post" enctype="multipart/form-data">
-   <input type="file" name="file" />
-   <input type="submit" value="Submit">
-</form>
-</body>
+<div>
+    <div align="center">
+      <blockquote>
+        <p>Plough your file and upload it across sites!</p>
+      </blockquote>
+    </div> 
+    
+    <br><br><br><br>
+    
+    s<form action="http://0.0.0.0:5000/upload?redirect=http%3A%2F%2Flocalhost%2FScrewTheCloud%2FCloudUI%2Findex2.html" method="POST" enctype="multipart/form-data">	
+        <div class="row fileupload-buttonbar">
+            <div align="center">
+		<input type="file" name='file' style="font-size: 25px; height: 40px; margin-left: -60px;" />
+		<input type="submit" class="btn btn-primary start" style="margin-left: 120px; border-top-left-radius:0px; border-top-right-radius:0px; border-bottom-left-radius:0px; border-bottom-right-radius:0px; width:120px; height:30pt; margin-top: 4pt; position: relative; left: 100px" value="Submit" />
+            </div>
+        </div>
+    </form>
+    <br>
+</body> 
 </html>

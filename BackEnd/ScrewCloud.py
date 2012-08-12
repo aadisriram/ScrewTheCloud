@@ -13,7 +13,7 @@ import StringIO
 
 import urllib
 
-UPLOAD_FOLDER = '/home/thirtyseven/projects/ScrewTheCloud/BackEnd/store'
+UPLOAD_FOLDER = '/Users/aadityasriram/tmp'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
@@ -75,12 +75,12 @@ class UploaderB():
 img_uploader = ImageUploader()
 pb_uploader = PastebinUploader()
         
-#uploaders[img_uploader.upId()] = img_uploader
-#uploaders[pb_uploader.upId()] = pb_uploader
+uploaders[img_uploader.upId()] = img_uploader
+uploaders[pb_uploader.upId()] = pb_uploader
 
-uploaders["pb"] = UploaderB()
-uploaders["im"] = Uploader()
-uploaders["pc"] = Uploader()
+uploaders["pc"] = UploaderB()
+uploaders["im"] = img_uploader()
+uploaders["pb"] = pb_uploader()
 
 class DefaultSplitStrategy():
     _numSplits = 0
