@@ -48,10 +48,10 @@ class UploaderB():
         return self.dataStore[identifier]
     
 img_uploader = ImageUploader()
-pb_uploader = PastebinUploader()
+#pb_uploader = PastebinUploader()
         
 uploaders[img_uploader.upId()] = img_uploader
-uploaders[pb_uploader.upId()] = pb_uploader
+uploaders["ub"] = UploaderB()
 
 class DefaultSplitStrategy():
     _numSplits = 0
@@ -128,7 +128,7 @@ class ScrewCloud():
         # Now we essentially have a list of bytes, we need to split and save
         fileData = screwCloud.encode(fileData)
           
-        dss = DefaultSplitStrategy(4, list_to_array(uploaders), len(fileData))
+        dss = DefaultSplitStrategy(2, list_to_array(uploaders), len(fileData))
         
         prev_offset = 0
         next_split = dss.get_next()
