@@ -47,7 +47,7 @@ class ImageUploader(Uploader):
             rowarray.extend([0,0,0])
             col +=1
         pixelarray.append(rowarray)
-        png.from_array(pixelarray,'RGB').save("tmp.png")        
+        png.from_array(pixelarray,'RGB;3').save("tmp.png")        
         identifier = self.upload_to_imgur("tmp.png")        
         return identifier+':'+str(len(data))
 

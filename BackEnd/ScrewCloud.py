@@ -11,6 +11,8 @@ import json
 import uuid
 import StringIO
 
+import urllib
+
 UPLOAD_FOLDER = '/home/thirtyseven/projects/ScrewTheCloud/BackEnd/store'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
@@ -33,6 +35,9 @@ class Uploader():
         identifier = int(identifier)
         return self.dataStore[identifier]
     
+    def getEmbeddableContent(self):
+        return "google.com"
+    
 class UploaderB():
     dataStore = []
     
@@ -47,11 +52,17 @@ class UploaderB():
         identifier = int(identifier)
         return self.dataStore[identifier]
     
+    def getEmbeddableContent(self):
+        return "bing.com"
+    
 img_uploader = ImageUploader()
-#pb_uploader = PastebinUploader()
+pb_uploader = PastebinUploader()
         
 uploaders[img_uploader.upId()] = img_uploader
-uploaders["ub"] = UploaderB()
+uploaders[pb_uploader.upId()] = pb_uploader
+
+#uploaders["ub"] = UploaderB()
+#uploaders["ua"] = Uploader()
 
 class DefaultSplitStrategy():
     _numSplits = 0
@@ -122,6 +133,7 @@ class ScrewCloud():
     
     def upload(self, fileData, fileName, fileType):
         global uploaders
+        splitSummary = []
         
         identifier = ""
             
@@ -135,11 +147,18 @@ class ScrewCloud():
             
         while next_split is not None:
             uploader = next_split["service"]
-            print prev_offset, prev_offset + next_split["size"]
+            #print prev_offset, prev_offset + next_split["size"]
+            
             chunk = fileData[prev_offset:prev_offset + next_split["size"]]
             upload_id = uploader.upload_data(chunk)
             
             identifier += uploader.upId() + str(upload_id) + ";"
+            
+            splitSummary.append({
+                "ratio": float(len(chunk))/float(len(fileData)),
+                "service": uploader.upId(),
+                "embeddable": uploader.getEmbeddableContent()
+            })
             
             prev_offset += next_split["size"]
             next_split = dss.get_next()
@@ -148,7 +167,7 @@ class ScrewCloud():
         
         stash_id = get_random_id()
         self.stash[stash_id] = {"identifier": identifier[0:-1], "type": fileType, "name": fileName}
-        return (identifier[0:-1], stash_id)
+        return (identifier[0:-1], stash_id, splitSummary)
     
     def unstash(self, stash_id):
         return self.stash[stash_id]
@@ -197,6 +216,12 @@ screwCloud.retrieve(ident)
 def upload():    
     if request.method == 'POST':
         file = request.files['file']
+        redir_request = None
+        
+        try:
+            redir_request = request.args['redirect']
+        finally:
+            print 'HERE'
         
         if file:
             filePath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
@@ -211,6 +236,13 @@ def upload():
             
             fileData = file_to_byte_array(filePath)
             identData = screwCloud.upload(fileData, file.filename, contentType)
+            
+            if redir_request is not None:
+                payload = json.dumps({"identifier": identData[0], "stashId": identData[1], "splitSummary": identData[2]})
+                payload = urllib.quote(payload)
+                
+                redir_request += "?payload=" + payload
+                return redirect(redir_request)
             
             return json.dumps({"identifier": identData[0], "stashId": identData[1]})
     
@@ -266,4 +298,4 @@ def retrieve():
     
 if __name__ == "__main__":
     app.debug = True
-    app.run()
+    app.run(host='0.0.0.0')
